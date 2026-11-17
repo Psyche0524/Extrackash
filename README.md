@@ -47,6 +47,20 @@ Open http://127.0.0.1:8000 for the app and http://127.0.0.1:8000/admin for the a
 
 macOS/Linux: use `source .venv/bin/activate` instead of `.venv\Scripts\activate`.
 
+## View it as a mobile app
+
+**On your PC:** open the app in Chrome/Edge, press `F12`, then `Ctrl+Shift+M`, and pick a phone (e.g. iPhone 14 Pro, 393 px like the Figma frames).
+
+**On your real phone** (phone and PC on the same Wi-Fi):
+
+```bash
+python manage.py runserver 0.0.0.0:8000
+```
+
+1. Find your PC's IP: run `ipconfig` and look for **IPv4 Address** (e.g. `192.168.1.5`).
+2. On your phone, open `http://192.168.1.5:8000`.
+3. If it doesn't load, allow Python through Windows Firewall (Private networks) when Windows asks.
+
 ## Every day
 
 ```bash
