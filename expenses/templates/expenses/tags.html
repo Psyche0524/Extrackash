@@ -1,5 +1,5 @@
 {% extends 'expenses/base.html' %}
-{% load money %}
+{% load money icons %}
 
 {% block title %}Tags · Extrackash{% endblock %}
 
@@ -10,7 +10,7 @@
 <ul class="list">
   {% for r in tags %}
   <li><a class="row" href="{% url 'activity' %}?tag={{ r.tag|urlencode }}">
-    <span class="tile">#</span>
+    <span class="tile">{% icon 'tag' %}</span>
     <span class="row-text"><strong>{{ r.tag }}</strong><small>{{ r.count }} expense{{ r.count|pluralize }}</small></span>
     <span class="amount">{{ r.total|peso }}</span>
   </a></li>

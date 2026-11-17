@@ -1,11 +1,12 @@
 {% extends 'expenses/base.html' %}
+{% load icons %}
 
 {% block title %}Create account · Extrackash{% endblock %}
 {% block tabbar %}{% endblock %}
 
 {% block content %}
 <header class="page-head">
-  <a class="back" href="{% url 'welcome' %}" aria-label="Back">‹</a>
+  <a class="icon-btn" href="{% url 'welcome' %}" aria-label="Back">{% icon 'back' %}</a>
   <h1>Make it yours</h1>
   <span></span>
 </header>
@@ -21,7 +22,7 @@
   {% with field=form.password1 %}{% include 'expenses/_field.html' %}{% endwith %}
   {% with field=form.password2 %}{% include 'expenses/_field.html' %}{% endwith %}
   <p class="hint">Use at least 8 characters. Avoid common passwords.</p>
-  <button type="submit" class="btn block arrow">Create my space <span aria-hidden="true">→</span></button>
+  <button type="submit" class="btn block arrow">Create my space</button>
 </form>
 
 <p class="switch">Already have an account? <a href="{% url 'login' %}">Log in</a></p>

@@ -1,5 +1,4 @@
 import csv
-import re
 from datetime import timedelta
 from decimal import Decimal
 
@@ -125,17 +124,6 @@ def ready(request):
 
 # ---------- home & activity ----------
 
-def _streak(user):
-    """Days in a row (ending today or yesterday) with at least one logged transaction."""
-    days = set(user.transactions.values_list('date', flat=True))
-    day, count = timezone.localdate(), 0
-    if day not in days:
-        day -= timedelta(days=1)
-    while day in days:
-        count, day = count + 1, day - timedelta(days=1)
-    return count
-
-
 def _greeting(hour):
     if hour < 12:
         return 'morning'
@@ -176,7 +164,7 @@ def home(request):
         p.days_left = (p.next_date - today).days
     years = {'3y': 3, '5y': 5}.get(request.GET.get('forecast'), 1)
     return render(request, 'expenses/home.html', {
-        'today': today, 'streak': _streak(user), 'insight': _insight(user),
+        'today': today, 'insight': _insight(user),
         'greeting': _greeting(timezone.localtime().hour),
         'span': span, 'span_in': _sum(period.filter(kind='income')), 'span_out': _sum(period.filter(kind='expense')),
         'week': _daily_bars(week), 'due': due, 'due_total': sum(p.amount for p in due),
@@ -765,43 +753,6 @@ def household_leave(request):
         home.delete()
     messages.success(request, 'You left the household.')
     return redirect('shared')
-
-
-# ---------- chat ----------
-
-@login_required
-def chat(request):
-    # shortcut: rule-based answers from the user's own numbers, no AI service; swap in an LLM API later if wanted.
-    question = request.GET.get('q', '').strip()
-    answer = None
-    if question:
-        user = request.user
-        rows = _budget_rows(user)
-        left = sum(r['left'] for r in rows) if rows else _available(user)
-        today = timezone.localdate()
-        days_left = ((today.replace(day=28) + timedelta(days=4)).replace(day=1) - today).days
-        amount = re.search(r'(\d[\d,]*(?:\.\d+)?)', question)
-        if amount:
-            want = Decimal(amount.group(1).replace(',', ''))
-            after = left - want
-            answer = {
-                'title': 'Yes, with a small adjustment.' if after >= 0 else 'Not comfortably this month.',
-                'body': f'You have ₱{left:,.2f} left {"in your plan" if rows else "available"}. '
-                        f'Setting aside ₱{want:,.2f} would leave ₱{after:,.2f} for the next {days_left} days.',
-                'step': f'Aim for about ₱{max(after, 0) / days_left:,.0f} a day in remaining spending.' if after >= 0
-                        else 'Try a smaller amount, or move part of it to next month.',
-            }
-        else:
-            start = _month_start()
-            this = _sum(user.transactions.filter(kind='expense', date__gte=start))
-            prev_start = _prev_month(start)
-            prev = _sum(user.transactions.filter(kind='expense', date__gte=prev_start, date__lte=prev_start + (today - start)))
-            answer = {
-                'title': 'Spending is down.' if this <= prev else 'Spending is up.',
-                'body': f'This month you spent ₱{this:,.2f}. At this point last month it was ₱{prev:,.2f}.',
-                'step': 'Ask "Can I save 5000 this month?" to check a savings amount.',
-            }
-    return render(request, 'expenses/chat.html', {'question': question, 'answer': answer, 'today': timezone.localdate(), 'tab': 'plan'})
 
 
 # ---------- explore & settings ----------

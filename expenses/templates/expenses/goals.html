@@ -1,5 +1,5 @@
 {% extends 'expenses/base.html' %}
-{% load money %}
+{% load money icons %}
 
 {% block title %}Goals · Extrackash{% endblock %}
 
@@ -12,7 +12,7 @@
 
 {% for g in goals %}
 <a class="panel" href="{% url 'goal' g.pk %}">
-  <span class="flag" aria-hidden="true">⚑</span>
+  <span class="tile">{% icon 'goal' %}</span>
   <h3>{{ g.name }}</h3>
   <p class="muted small">{{ g.note }}{% if g.note and g.target_date %} · {% endif %}{{ g.target_date|date:"F Y" }}</p>
   {% with saved=g.saved %}
