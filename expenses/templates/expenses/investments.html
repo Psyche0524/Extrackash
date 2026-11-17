@@ -4,7 +4,7 @@
 {% block title %}Investments · Extrackash{% endblock %}
 
 {% block content %}
-{% url 'explore' as back %}{% url 'investment_new' as plus %}{% include 'expenses/_head.html' with title='Investments' %}
+{% url 'plan' as back %}{% url 'investment_new' as plus %}{% include 'expenses/_head.html' with title='Investments' %}
 
 <p class="label">Portfolio value</p>
 <p class="big dark">{{ value|peso }}</p>

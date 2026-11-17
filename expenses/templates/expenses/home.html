@@ -3,28 +3,73 @@
 
 {% block content %}
 <header class="page-head">
-  <h1>Hello, {{ user.first_name|default:"there" }}!</h1>
-  <a class="icon-btn" href="{% url 'add' %}" aria-label="Add transaction">+</a>
+  <span class="streak" title="Days in a row you logged something">🔥 ×{{ streak }}</span>
+  <span class="head-icons">
+    <a class="icon-btn small" href="{% url 'planned' %}" aria-label="Payments due">🔔</a>
+    <a class="icon-btn small" href="{% url 'shared' %}" aria-label="Shared finances">👥</a>
+    <a class="icon-btn small" href="{% url 'settings' %}" aria-label="Settings">⚙</a>
+  </span>
 </header>
 
-<section class="hero">
-  <p class="label">Total available · {{ accounts }} account{{ accounts|pluralize }}</p>
-  <p class="big">{{ available|peso }}</p>
-  <div class="split">
-    <div><p class="label">Income this month</p><p class="mid">{{ income|peso }}</p></div>
-    <div><p class="label">Expenses this month</p><p class="mid">{{ expenses|peso }}</p></div>
-  </div>
-</section>
+<p class="step">{{ today|date:"l, F j" }}</p>
+<h1>Good {{ greeting }}, {{ user.first_name|default:"there" }}!</h1>
 
-<div class="actions">
-  <a class="btn" href="{% url 'add' %}">+ Add</a>
-  <a class="btn soft" href="{% url 'transfer' %}">Transfer</a>
+<div class="tip plain insight">
+  <img src="{% static 'expenses/mascot.png' %}" alt="" width="56" height="56">
+  <p>{{ insight }}</p>
 </div>
 
-<a class="tip" href="{% url 'plan' %}">
-  <img src="{% static 'expenses/mascot.png' %}" alt="" width="40" height="40">
-  <p>{% if plan_left is not None %}You have {{ plan_left|peso }} left in your {% now "F" %} plan. Keep your goals in sight. →{% else %}Set a monthly budget to see what's left to spend. →{% endif %}</p>
+<div class="two-cards">
+  <section class="card">
+    <p class="label">Last 7 days</p>
+    {% include 'expenses/_bars.html' with bars=week %}
+  </section>
+  <section class="card">
+    <p class="label">{% if span == 'week' %}This week{% elif span == 'month' %}This month{% else %}Today{% endif %}</p>
+    <p class="green">↗ {{ span_in|peso }}</p>
+    <p class="mid">↘ {{ span_out|peso }}</p>
+    <nav class="segmented three links small">
+      <a href="?span=day" {% if span == 'day' %}aria-current="page"{% endif %}>Day</a>
+      <a href="?span=week" {% if span == 'week' %}aria-current="page"{% endif %}>Week</a>
+      <a href="?span=month" {% if span == 'month' %}aria-current="page"{% endif %}>Month</a>
+    </nav>
+  </section>
+</div>
+
+<a class="section-head" href="{% url 'planned' %}">
+  <span><h2>Payments due</h2><small class="muted">{{ due|length }} payment{{ due|length|pluralize }} coming up</small></span>
+  <span class="right"><strong>{{ due_total|peso }}</strong><small class="muted">Total due ›</small></span>
 </a>
+<ul class="list">
+  {% for p in due %}
+  <li class="row">
+    <span class="date-chip"><small>{{ p.next_date|date:"M" }}</small><strong>{{ p.next_date|date:"j" }}</strong></span>
+    <span class="row-text"><strong>{{ p.name }}</strong><small>{% if p.days_left < 0 %}Overdue{% elif p.days_left == 0 %}Due today{% else %}{{ p.days_left }} day{{ p.days_left|pluralize }} left{% endif %}</small></span>
+    <span class="amount">{{ p.amount|peso }}</span>
+  </li>
+  {% empty %}<li class="empty">Nothing due in the next month. <a href="{% url 'planned_new' %}">Plan a payment</a></li>{% endfor %}
+</ul>
+
+<div class="section-head">
+  <span><h2>Monthly forecast</h2><a class="green small" href="{% url 'cashflow' %}">Forecast cashflow ›</a></span>
+  <nav class="segmented three links small">
+    <a href="?forecast=1y" {% if years == 1 %}aria-current="page"{% endif %}>1Y</a>
+    <a href="?forecast=3y" {% if years == 3 %}aria-current="page"{% endif %}>3Y</a>
+    <a href="?forecast=5y" {% if years == 5 %}aria-current="page"{% endif %}>5Y</a>
+  </nav>
+</div>
+<div class="scroller">
+  {% for m in forecast %}
+  <section class="card forecast">
+    <p class="mid">{{ m.month|date:"M" }} <small class="muted">{{ m.month|date:"Y" }}</small></p>
+    <p class="between small"><span class="muted">Expected bills</span>{{ m.bills|peso }}</p>
+    <p class="between small"><span class="muted">Expected income</span><span class="green">{{ m.income|peso }}</span></p>
+    <p class="label">Projected net</p>
+    <p class="mid {% if m.net < 0 %}warn-text{% else %}green{% endif %}">{{ m.net|peso }}</p>
+  </section>
+  {% endfor %}
+</div>
+<p class="fine">Based on your planned and recurring payments.</p>
 
 <div class="section-head">
   <h2>Recent activity</h2>
@@ -33,9 +78,4 @@
 <ul class="list">
   {% for t in recent %}{% include 'expenses/_row.html' %}{% empty %}<li class="empty">No transactions yet.</li>{% endfor %}
 </ul>
-
-<a class="card-link" href="{% url 'cashflow' %}">
-  <span class="muted">A little further ahead</span>
-  <strong>See your 30-day cashflow →</strong>
-</a>
 {% endblock %}

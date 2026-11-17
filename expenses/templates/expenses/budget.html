@@ -4,7 +4,7 @@
 {% block title %}{{ budget.get_category_display }} · Extrackash{% endblock %}
 
 {% block content %}
-{% url 'plan' as back %}{% include 'expenses/_head.html' with title=budget.get_category_display %}
+{% url 'budgets' as back %}{% include 'expenses/_head.html' with title=budget.get_category_display %}
 
 <p class="label">Available this month</p>
 <p class="big dark">{{ left|peso }}</p>

@@ -14,7 +14,7 @@ def make_user(email='alex@example.com', name='Alex'):
 
 class AuthTests(TestCase):
     def test_pages_need_login(self):
-        for url in ['/', '/activity/', '/add/', '/plan/', '/explore/', '/settings/']:
+        for url in ['/', '/activity/', '/add/', '/plan/', '/explore/accounts/', '/settings/']:
             self.assertRedirects(self.client.get(url), f'/welcome/?next={url}')
 
     def test_signup_then_setup_first_account(self):
@@ -23,11 +23,10 @@ class AuthTests(TestCase):
             'password1': 'squirrel-cash-26', 'password2': 'squirrel-cash-26',
         })
         self.assertRedirects(response, '/setup/')
-        response = self.client.post('/setup/', {'name': 'BPI Everyday', 'kind': 'bank', 'opening_balance': '54250'})
+        response = self.client.post('/setup/', {'provider': 'bpi', 'name': 'BPI Everyday', 'kind': 'bank', 'opening_balance': '54250'})
         self.assertRedirects(response, '/ready/')
-        home = self.client.get('/')
-        self.assertContains(home, 'Hello, Alex!')
-        self.assertContains(home, '₱54,250.00')
+        self.assertContains(self.client.get('/'), 'Alex!')
+        self.assertContains(self.client.get('/explore/accounts/'), '₱54,250.00')
         self.assertEqual(User.objects.get().username, 'alex@example.com')
 
     def test_duplicate_email_rejected(self):
@@ -81,7 +80,15 @@ class MoneyTests(TestCase):
         self.bank.refresh_from_db()
         self.assertEqual(self.bank.balance, 1000)   # 1000 + 500 - 200 - 300
         self.assertEqual(self.gcash.balance, 300)
-        self.assertEqual(self.client.get('/').context['available'], 1300)  # transfers don't change the total
+        self.assertEqual(self.client.get('/explore/accounts/').context['net'], 1300)  # own transfers don't change it
+
+    def test_add_wallet_uses_provider_name_and_colour(self):
+        self.client.post('/explore/accounts/new/', {'provider': 'gcash', 'name': '', 'kind': 'wallet', 'opening_balance': '545'})
+        wallet = Account.objects.get(provider='gcash')
+        self.assertEqual(wallet.name, 'GCash')
+        page = self.client.get('/explore/accounts/')
+        self.assertContains(page, '--card: #1d4ed8')
+        self.assertContains(page, 'Add wallet')
 
     def test_transfer_needs_two_different_accounts(self):
         response = self.client.post('/transfer/', {'account': self.bank.pk, 'to_account': self.bank.pk, 'amount': '1', 'date': '2026-11-17'})
@@ -175,6 +182,119 @@ class MoneyTests(TestCase):
         answer = self.client.get('/explore/chat/?q=Can I save 5,000 this month?').context['answer']
         self.assertIn('₱5,000.00', answer['body'])
 
+    # ---- features from the screen recording ----
+
+    def test_transfer_from_outside_and_to_outside_with_fee(self):
+        self.client.post('/transfer/', {'source': 'external', 'destination': 'mine', 'to_account': self.gcash.pk,
+                                        'amount': '500', 'date': '2026-11-17'})
+        self.client.post('/transfer/', {'source': 'mine', 'destination': 'external', 'account': self.bank.pk,
+                                        'amount': '200', 'fee': '15', 'date': '2026-11-17'})
+        self.assertEqual(self.gcash.balance, 500)
+        self.assertEqual(self.bank.balance, 1000 - 200 - 15)
+        self.assertTrue(Transaction.objects.filter(kind='expense', category='fees', amount=15).exists())
+        both_outside = self.client.post('/transfer/', {'source': 'external', 'destination': 'external', 'amount': '1', 'date': '2026-11-17'})
+        self.assertContains(both_outside, 'At least one side must be one of your accounts.')
+
+    def test_net_worth_assets_minus_liabilities(self):
+        card = Account.objects.create(user=self.user, name='Visa', kind='credit')
+        self.add(amount='300', account=card.pk)
+        ctx = self.client.get('/explore/accounts/').context
+        self.assertEqual((ctx['assets'], ctx['liabilities'], ctx['net']), (1000, 300, 700))
+
+    def test_custom_category_is_saved_and_offered_again(self):
+        self.add(new_category='Spotify', description='')
+        tx = Transaction.objects.get()
+        self.assertEqual((tx.category, tx.description), ('Spotify', 'Spotify'))
+        self.assertContains(self.client.get('/add/'), 'value="Spotify"')
+
+    def test_calculator_amount_still_validated_on_server(self):
+        response = self.add(amount='12+3')  # JS works this out first; without JS the server refuses it
+        self.assertEqual(Transaction.objects.count(), 0)
+        self.assertContains(response, 'Enter a number')
+
+    def test_recurring_and_someone_owes_me(self):
+        self.add(amount='900', recurring='on', owed_by='Maya', owed_amount='300', description='Dinner')
+        planned = self.user.planned.get()
+        self.assertEqual((planned.amount, planned.repeat, str(planned.next_date)), (900, 'monthly', '2026-12-17'))
+        owed = Debt.objects.get(kind='receivable')
+        self.assertEqual((owed.name, owed.total), ('Maya', 300))
+        self.client.post(f'/explore/debts/{owed.pk}/pay/')  # Maya pays back: shows up as income
+        self.assertTrue(Transaction.objects.filter(kind='income', amount=300).exists())
+        self.assertContains(self.add(owed_by='', owed_amount='50'), 'Who owes you?')
+
+    def test_planned_payment_done_logs_it_and_moves_to_next_month(self):
+        from datetime import date
+        p = self.user.planned.create(name='Rent', amount=8000, account=self.bank, next_date=date(2027, 1, 31))
+        self.client.post(f'/plan/planned/{p.pk}/done/')
+        p.refresh_from_db()
+        self.assertEqual(p.next_date, date(2027, 2, 28))  # month-end is clamped
+        self.assertTrue(Transaction.objects.filter(description='Rent', amount=8000).exists())
+        once = self.user.planned.create(name='Gift', amount=1, repeat='once')
+        self.client.post(f'/plan/planned/{once.pk}/done/')
+        once.refresh_from_db()
+        self.assertFalse(once.active)
+
+    def test_monthly_forecast_counts_planned_payments(self):
+        from django.utils import timezone
+        today = timezone.localdate()
+        self.user.planned.create(name='Netflix', amount=549, next_date=today, repeat='monthly')
+        self.user.planned.create(kind='income', name='Salary', amount=30000, next_date=today, repeat='weekly')
+        first = self.client.get('/').context['forecast'][0]
+        self.assertEqual(first['bills'], 549)
+        self.assertEqual(first['income'] % 30000, 0)
+        self.assertGreaterEqual(first['income'], 30000)
+
+    def test_weekly_budget_only_counts_this_week(self):
+        from datetime import timedelta
+        from django.utils import timezone
+        today = timezone.localdate()
+        budget = Budget.objects.create(user=self.user, category='dining', limit=1000, period='weekly')
+        start, end = budget.window(today)
+        self.assertEqual((end - start).days, 7)
+        self.assertTrue(start <= today < end)
+        self.add(amount='100', category='dining', date=today.isoformat())
+        self.add(amount='999', category='dining', date=(start - timedelta(days=1)).isoformat())
+        self.assertEqual(self.client.get(f'/plan/budgets/{budget.pk}/').context['spent'], 100)
+
+    def test_history_groups_by_day_with_totals(self):
+        self.add(amount='100', date='2026-11-17')
+        self.add(amount='50', kind='income', category='salary', date='2026-11-17')
+        self.add(amount='30', date='2026-11-16')
+        days = list(self.client.get('/activity/').context['days'])
+        self.assertEqual([(str(d['date']), d['out'], d['in']) for d in days], [('2026-11-17', 100, 50), ('2026-11-16', 30, 0)])
+
+    def test_tags_and_trips(self):
+        from datetime import date
+        self.add(amount='400', tags='Japan, food', date='2026-11-17')
+        self.assertEqual(self.client.get('/plan/tags/').context['tags'][0]['tag'], 'japan')
+        self.assertContains(self.client.get('/activity/?tag=japan'), '400.00')
+        trip = self.user.trips.create(name='Japan', start=date(2026, 11, 16), end=date(2026, 11, 20), budget=1000)
+        self.assertEqual(trip.spent, 400)
+
+    def test_photo_is_private(self):
+        from django.core.files.uploadedfile import SimpleUploadedFile
+        from django.test import override_settings
+        import tempfile
+        with tempfile.TemporaryDirectory() as media, override_settings(MEDIA_ROOT=media):
+            gif = b'GIF89a\x01\x00\x01\x00\x80\x00\x00\x00\x00\x00\xff\xff\xff!\xf9\x04\x00\x00\x00\x00\x00,\x00\x00\x00\x00\x01\x00\x01\x00\x00\x02\x02D\x01\x00;'
+            self.add(photo=SimpleUploadedFile('r.gif', gif, content_type='image/gif'))
+            tx = Transaction.objects.get()
+            response = self.client.get(f'/activity/{tx.pk}/photo/')
+            self.assertEqual(response.status_code, 200)
+            response.close()
+            not_image = self.add(photo=SimpleUploadedFile('x.txt', b'hi', content_type='text/plain'))
+            self.assertContains(not_image, 'Please choose an image.')
+            self.client.force_login(make_user('maya@example.com'))
+            self.assertEqual(self.client.get(f'/activity/{tx.pk}/photo/').status_code, 404)
+
+    def test_streak_counts_days_in_a_row(self):
+        from datetime import timedelta
+        from django.utils import timezone
+        today = timezone.localdate()
+        for days_ago in (0, 1, 2, 4):
+            self.add(date=(today - timedelta(days=days_ago)).isoformat())
+        self.assertEqual(self.client.get('/').context['streak'], 3)
+
     def test_every_page_loads(self):
         goal = Goal.objects.create(user=self.user, name='G', target=100)
         budget = Budget.objects.create(user=self.user, category='dining', limit=100)
@@ -182,14 +302,17 @@ class MoneyTests(TestCase):
         item = Investment.objects.create(user=self.user, name='Fund', invested=100, value=120)
         self.add(description='Lunch')
         tx = Transaction.objects.get()
-        names = ['home', 'activity', 'add', 'transfer', 'plan', 'budget_new', 'goals', 'goal_new', 'cashflow',
-                 'explore', 'accounts', 'account_new', 'cards', 'installments', 'loans', 'debt_new', 'investments',
+        names = ['home', 'activity', 'add', 'transfer', 'plan', 'budgets', 'budget_new', 'goals', 'goal_new', 'cashflow',
+                 'planned', 'planned_new', 'trips', 'trip_new', 'tags', 'receivables',
+                 'accounts', 'account_new', 'cards', 'installments', 'loans', 'debt_new', 'investments',
                  'investment_new', 'reports', 'shared', 'household_new', 'chat', 'settings', 'profile_edit', 'delete_account']
         urls = [reverse(n) for n in names] + [
             reverse('transaction', args=[tx.pk]), reverse('transaction_edit', args=[tx.pk]),
             reverse('budget', args=[budget.pk]), reverse('goal', args=[goal.pk]), reverse('goal_add', args=[goal.pk]),
             reverse('debt_edit', args=[debt.pk]), reverse('investment_edit', args=[item.pk]),
             '/explore/reports/?period=week', '/explore/reports/?period=year', '/explore/chat/?q=how am I doing',
+            '/?span=week', '/?span=month&forecast=5y', '/add/?scan=1', '/activity/?kind=income&tag=x&date=2026-11-17',
+            '/explore/accounts/?show=liabilities&view=list',
         ]
         for url in urls:
             with self.subTest(url=url):

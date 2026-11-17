@@ -124,6 +124,10 @@ USE_TZ = True
 
 STATIC_URL = 'static/'
 
+# Receipt photos. Not served as public files: the transaction_photo view checks ownership first.
+MEDIA_ROOT = BASE_DIR / 'media'
+DATA_UPLOAD_MAX_MEMORY_SIZE = 6 * 1024 * 1024
+
 # Default primary key field type
 # https://docs.djangoproject.com/en/5.2/ref/settings/#default-auto-field
 

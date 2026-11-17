@@ -1,32 +1,100 @@
 {% extends 'expenses/base.html' %}
 {% load money %}
 
-{% block title %}Accounts · Extrackash{% endblock %}
+{% block title %}Wallet · Extrackash{% endblock %}
 
 {% block content %}
-{% url 'explore' as back %}{% url 'account_new' as plus %}{% include 'expenses/_head.html' with title='Accounts' %}
+<header class="page-head">
+  <span><h1>Accounts</h1><small class="muted">Manage your wallets and balances</small></span>
+  <a class="btn small" href="{% url 'account_new' %}?kind=wallet">+ Add account</a>
+</header>
 
-<p class="label">Total available</p>
-<p class="big dark">{{ total|peso }}</p>
-<p class="muted">{{ accounts|length }} account{{ accounts|length|pluralize }}. One clear picture.</p>
-
-<ul class="list">
-  {% for a in accounts %}
-  <li>
-    <a class="row" href="{% url 'account_edit' a.pk %}">
-      <span class="tile" aria-hidden="true">{{ a.get_kind_display|first }}</span>
-      <span class="row-text"><strong>{{ a.name }}</strong><small>{{ a.get_kind_display }}</small></span>
-      <span class="amount">{{ a.balance|peso }}</span>
-    </a>
-  </li>
-  {% empty %}<li class="empty">No accounts yet.</li>{% endfor %}
-</ul>
-
-<section class="note-card">
-  <h2>Track, don't hand over control.</h2>
-  <p>Record balances manually. Extrackash never moves your real money.</p>
+<section class="hero">
+  <p class="label">{% if show == 'assets' %}Assets{% elif show == 'liabilities' %}Liabilities{% else %}Net worth{% endif %}</p>
+  <p class="big">{% if show == 'assets' %}{{ assets|peso }}{% elif show == 'liabilities' %}{{ liabilities|peso }}{% else %}{{ net|peso }}{% endif %}</p>
+  <p class="label">{% if show == 'all' %}Assets minus liabilities{% elif show == 'assets' %}What you have{% else %}What you owe on cards{% endif %}</p>
 </section>
+<nav class="segmented three links">
+  <a href="?show=all" {% if show == 'all' %}aria-current="page"{% endif %}>All</a>
+  <a href="?show=assets" {% if show == 'assets' %}aria-current="page"{% endif %}>Assets</a>
+  <a href="?show=liabilities" {% if show == 'liabilities' %}aria-current="page"{% endif %}>Liabilities</a>
+</nav>
 
-<a class="btn block" href="{% url 'transfer' %}">Record a transfer</a>
-<a class="btn soft block left" href="{% url 'account_new' %}">+ Add account</a>
+<div class="two-cards">
+  <section class="card">
+    <p class="label green">Insight</p>
+    <p class="small">{{ insight }}</p>
+    <a class="green small" href="{% url 'cashflow' %}">Forecast cashflow ›</a>
+  </section>
+  <section class="card">
+    <p class="label">Daily balance</p>
+    {% include 'expenses/_bars.html' with bars=daily %}
+  </section>
+</div>
+
+<div class="between">
+  <nav class="chips" aria-label="Groups">
+    <a href="?show={{ show }}&view={{ view }}" {% if not group %}aria-current="page"{% endif %}>All</a>
+    {% for g in group_names %}<a href="?show={{ show }}&view={{ view }}&group={{ g|urlencode }}" {% if group == g %}aria-current="page"{% endif %}>{{ g }}</a>{% endfor %}
+    {% if group_names %}<a href="?show={{ show }}&view={{ view }}&group=Ungrouped" {% if group == 'Ungrouped' %}aria-current="page"{% endif %}>Ungrouped</a>{% endif %}
+  </nav>
+  <nav class="segmented links view-toggle" aria-label="View">
+    <a href="?show={{ show }}&group={{ group|urlencode }}&view=grid" {% if view != 'list' %}aria-current="page"{% endif %} aria-label="Grid">▦</a>
+    <a href="?show={{ show }}&group={{ group|urlencode }}&view=list" {% if view == 'list' %}aria-current="page"{% endif %} aria-label="List">☰</a>
+  </nav>
+</div>
+
+{% for g in groups %}
+<details class="group" open>
+  <summary class="between"><strong>{{ g.name }}</strong><span>{{ g.total|peso }}</span></summary>
+  {% if view == 'list' %}
+  <ul class="list">
+    {% for a in g.items %}
+    <li><a class="row" href="{% url 'account_edit' a.pk %}">
+      <span class="wallet-logo" style="--card: {{ a.color }}" aria-hidden="true">{{ a.get_provider_display|first }}</span>
+      <span class="row-text"><strong>{{ a.name }}</strong><small>{{ a.get_kind_display }}{% if a.interest_rate %} · {{ a.interest_rate|floatformat:"-2" }}% a year{% endif %}</small></span>
+      <span class="amount">{{ a.bal|peso }}</span>
+    </a></li>
+    {% endfor %}
+  </ul>
+  {% else %}
+  <div class="wallets">
+    {% for a in g.items %}
+    <a class="wallet" href="{% url 'account_edit' a.pk %}" style="--card: {{ a.color }}">
+      <span class="wallet-head">
+        <span class="wallet-logo" aria-hidden="true">{{ a.get_provider_display|first }}</span>
+        <strong>{{ a.name }}</strong>
+      </span>
+      <small>{{ a.get_kind_display }} · PHP{% if a.interest_rate %} · {{ a.interest_rate|floatformat:"-2" }}% a year{% endif %}</small>
+      <span class="label">Balance</span>
+      <span class="wallet-balance">{{ a.bal|peso }}</span>
+    </a>
+    {% endfor %}
+  </div>
+  {% endif %}
+</details>
+{% empty %}
+<p class="empty">No accounts here yet.</p>
+{% endfor %}
+
+<div class="wallets">
+  <a class="wallet add" href="{% url 'account_new' %}?kind=wallet">
+    <span class="wallet-logo" aria-hidden="true">+</span>
+    <strong>Add wallet</strong>
+    <small>GCash, Maya, banks, cash…</small>
+  </a>
+  <a class="wallet add" href="{% url 'transfer' %}">
+    <span class="wallet-logo" aria-hidden="true">⇄</span>
+    <strong>Transfer</strong>
+    <small>Between accounts or outside</small>
+  </a>
+</div>
+
+<div class="section-head">
+  <h2>Recent income</h2>
+  <a href="{% url 'activity' %}?kind=income">View all →</a>
+</div>
+<ul class="list">
+  {% for t in recent_income %}{% include 'expenses/_row.html' %}{% empty %}<li class="empty">No income logged yet.</li>{% endfor %}
+</ul>
 {% endblock %}

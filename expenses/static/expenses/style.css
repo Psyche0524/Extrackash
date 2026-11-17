@@ -136,7 +136,112 @@ hr { border: 0; border-top: 1px solid var(--line); margin: 16px 0; }
 a.tip { text-decoration: none; }
 .tip.plain { background: none; padding: 0; margin-bottom: 16px; }
 
-.credit-card { background: var(--g700); color: #fff; border-radius: 16px; padding: 24px; margin-bottom: 16px; }
+/* ---- Features from the screen recording ---- */
+.card { display: block; background: #fff; border-radius: 16px; padding: 14px 16px; color: inherit; text-decoration: none; }
+.two-cards { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin: 16px 0; }
+.two-cards .label { margin-top: 0; }
+.btn.small { padding: 8px 14px; font-size: .85rem; }
+.head-icons { display: flex; gap: 8px; }
+.icon-btn.small { width: 38px; height: 38px; display: grid; place-items: center; font-size: 1rem; background: var(--g100); border-radius: 12px; padding: 0; }
+.streak { background: var(--g100); border-radius: 12px; padding: 8px 12px; font-weight: 600; }
+.insight { align-items: flex-start; margin: 14px 0; }
+.insight p { background: #fff; border-radius: 14px; padding: 12px 14px; font-size: .9rem; }
+a.section-head { color: inherit; text-decoration: none; }
+.section-head small, .right small { display: block; }
+.right { text-align: right; }
+
+.mini-bars { display: grid; grid-template-columns: repeat(7, 1fr); gap: 6px; align-items: end; height: 90px; margin-top: 8px; }
+.mini-bars div { height: 100%; display: flex; flex-direction: column; justify-content: flex-end; align-items: center; gap: 4px; }
+.mini-bars span { width: 8px; min-height: 4px; border-radius: 6px; background: var(--g200); }
+.mini-bars span.today { background: var(--g500); }
+.mini-bars small { color: var(--muted); font-size: .65rem; }
+
+.segmented.small a { padding: 4px; font-size: .75rem; }
+.date-chip { flex: none; width: 48px; text-align: center; border: 1px solid var(--line); border-radius: 12px; padding: 4px 0; line-height: 1.1; }
+.date-chip small { display: block; color: var(--muted); font-size: .65rem; text-transform: uppercase; }
+.scroller { display: flex; gap: 12px; overflow-x: auto; scroll-snap-type: x mandatory; padding-bottom: 6px; }
+.forecast { flex: 0 0 72%; scroll-snap-align: start; }
+.forecast p { margin: 4px 0; }
+
+/* + button and its menu */
+.fab { position: fixed; right: 16px; bottom: 84px; z-index: 5; }
+.fab summary { list-style: none; width: 58px; height: 58px; border-radius: 18px; display: grid; place-items: center; background: var(--g500); color: #fff; font-size: 2rem; cursor: pointer; box-shadow: 0 8px 20px rgba(15,63,46,.3); }
+.fab summary::-webkit-details-marker { display: none; }
+.fab[open] summary { background: var(--g700); transform: rotate(45deg); }
+.screen:has(.tx-form, .transfer-form) ~ .fab { display: none; }  /* already adding something */
+.fab-menu { position: absolute; right: 0; bottom: 70px; width: 200px; background: #fff; border-radius: 16px; padding: 6px; box-shadow: 0 10px 30px rgba(0,0,0,.15); }
+.fab-menu a { display: block; padding: 12px 14px; border-radius: 10px; text-decoration: none; font-weight: 500; }
+.fab-menu a:hover { background: var(--g50); }
+
+/* chips: links, or radio buttons styled as chips */
+.chips input[type="radio"] { position: absolute; opacity: 0; width: 1px; }
+.chips label, .chips a, .chips summary span { display: inline-block; padding: 8px 14px; border-radius: 999px; background: var(--g100); font-size: .85rem; cursor: pointer; text-decoration: none; }
+.chips input:checked + label, .chips a[aria-current="page"] { background: var(--g700); color: #fff; }
+.chips input:focus-visible + label { outline: 2px solid var(--g400); }
+.chips { margin: 8px 0; }
+.tx-form:has(input[name="kind"][value="income"]:checked) .cats.expense,
+.tx-form:not(:has(input[name="kind"][value="income"]:checked)) .cats.income { display: none; }
+.tx-form #id_new_category { margin-top: 4px; }
+.tx-form #id_new_category::placeholder { color: var(--muted); }
+
+.kind-switch { flex: 1; max-width: 240px; }
+.keypad { display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; margin: 12px 0 16px; }
+.keypad button { padding: 14px 0; border: 0; border-radius: 12px; background: #fff; font: inherit; font-size: 1.2rem; font-weight: 500; color: var(--g700); cursor: pointer; }
+.keypad .op { background: var(--g100); }
+.keypad .eq { background: var(--g500); color: #fff; }
+.keypad button:active { transform: scale(.96); }
+.owed { margin-top: 16px; background: var(--g50); border-radius: 12px; padding: 12px 14px; }
+.owed summary { font-weight: 500; cursor: pointer; }
+
+/* wallet groups and list view */
+.group summary { list-style: none; cursor: pointer; padding: 12px 0 4px; }
+.group summary::before { content: '▾ '; color: var(--muted); }
+.group summary strong { flex: 1; }
+.group:not([open]) summary::before { content: '▸ '; }
+.group .wallets { margin-top: 8px; }
+.view-toggle { flex: none; grid-template-columns: 1fr 1fr; width: 84px; }
+.list .wallet-logo { --card: var(--g700); }
+
+/* history timeline */
+.filters { margin-bottom: 12px; }
+.filters summary { list-style: none; display: flex; justify-content: space-between; }
+.day-group { margin-top: 20px; }
+.day-head small { display: block; }
+.day-totals { display: flex; gap: 6px; }
+.pill { border-radius: 8px; padding: 4px 8px; font-size: .78rem; font-weight: 600; }
+.pill.out { background: #fbe4e2; color: var(--danger); }
+.pill.in { background: var(--g100); color: var(--g600); }
+.timeline > li { position: relative; padding-left: 16px; border-left: 2px solid var(--line); }
+.time { display: block; color: var(--muted); font-size: .72rem; padding-top: 10px; }
+.row-end { display: grid; justify-items: end; gap: 4px; }
+.acct-chip { border: 1px solid var(--line); border-radius: 6px; padding: 1px 6px; font-size: .7rem; color: var(--muted); }
+.receipt { display: block; width: 100%; border-radius: 16px; margin: 12px 0; }
+
+.tile-link { display: flex; align-items: center; gap: 10px; font-weight: 500; }
+.tile-link small { margin-left: auto; }
+.summary { margin-top: 16px; }
+.transfer-form:has(input[name="source"][value="external"]:checked) .from-side,
+.transfer-form:has(input[name="destination"][value="external"]:checked) .to-side,
+.transfer-form:has(input[value="external"]:checked) .swap-row { display: none; }
+.two > *, .two input { min-width: 0; }
+
+/* Wallet cards (Accounts) */
+.wallets { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin: 16px 0; }
+.wallet {
+  display: flex; flex-direction: column; gap: 4px; min-height: 150px; padding: 16px;
+  border-radius: 18px; color: #fff; text-decoration: none;
+  background: linear-gradient(160deg, var(--card), color-mix(in srgb, var(--card) 70%, #000));
+}
+.wallet-head { display: flex; align-items: center; gap: 10px; min-width: 0; }
+.wallet-head strong { font-weight: 600; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.wallet-logo { flex: none; width: 36px; height: 36px; border-radius: 10px; display: grid; place-items: center; background: #fff; color: var(--card, var(--g700)); font-weight: 700; }
+.wallet small { opacity: .85; font-size: .75rem; }
+.wallet .label { color: inherit; opacity: .8; margin: auto 0 0; }
+.wallet-balance { font-size: 1.15rem; font-weight: 600; }
+.wallet.add { background: var(--g100); color: var(--g700); border: 2px dashed var(--g300); justify-content: center; align-items: center; text-align: center; }
+.wallet.add .wallet-logo { background: var(--g700); color: #fff; font-size: 1.4rem; }
+
+.credit-card {background: var(--g700); color: #fff; border-radius: 16px; padding: 24px; margin-bottom: 16px; }
 .credit-card .label { color: var(--g100); margin: 0; }
 .credit-card .mid { margin: 14px 0; letter-spacing: .15em; }
 

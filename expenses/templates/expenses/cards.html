@@ -4,7 +4,7 @@
 {% block title %}Cards · Extrackash{% endblock %}
 
 {% block content %}
-{% url 'explore' as back %}{% include 'expenses/_head.html' with title='Cards' %}
+{% url 'plan' as back %}{% include 'expenses/_head.html' with title='Cards' %}
 
 {% for c in cards %}
 <section class="credit-card">

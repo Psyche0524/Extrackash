@@ -1,0 +1,36 @@
+{% extends 'expenses/base.html' %}
+
+{% block title %}Plan · Extrackash{% endblock %}
+
+{% block content %}
+<header class="page-head">
+  <span><h1>Plan</h1><small class="muted">Manage your budgets, goals, and more.</small></span>
+  <span class="head-icons">
+    <a class="icon-btn small" href="{% url 'reports' %}" aria-label="Reports">📊</a>
+    <a class="icon-btn small" href="{% url 'chat' %}" aria-label="Chat">💬</a>
+  </span>
+</header>
+
+<ul class="list menu">
+  <li><a class="row" href="{% url 'budgets' %}"><span class="tile">◔</span><span class="row-text"><strong>Category budgets</strong><small>Set daily, weekly, bi-weekly, monthly, or yearly limits. · {{ budgets }} set</small></span><span>›</span></a></li>
+  <li><a class="row" href="{% url 'goals' %}"><span class="tile">⚑</span><span class="row-text"><strong>Personal goals</strong><small>Track savings goals and milestones. · {{ goals }} active</small></span><span>›</span></a></li>
+  <li><a class="row" href="{% url 'loans' %}"><span class="tile">D</span><span class="row-text"><strong>Debt</strong><small>Track money you still owe. · {{ loans }} loan{{ loans|pluralize }}</small></span><span>›</span></a></li>
+  <li><a class="row" href="{% url 'receivables' %}"><span class="tile">₱</span><span class="row-text"><strong>Money owed to you</strong><small>{{ receivables }} receivable{{ receivables|pluralize }} tracked</small></span><span>›</span></a></li>
+  <li><a class="row" href="{% url 'planned' %}"><span class="tile">📅</span><span class="row-text"><strong>Planned payments</strong><small>{{ recurring }} recurring · {{ one_time }} one-time planned</small></span><span>›</span></a></li>
+  <li><a class="row" href="{% url 'investments' %}"><span class="tile">↗</span><span class="row-text"><strong>Investments</strong><small>{{ investments }} holding{{ investments|pluralize }}</small></span><span>›</span></a></li>
+</ul>
+
+<div class="two-cards">
+  <a class="card tile-link" href="{% url 'trips' %}"><span>✈</span> Travel <small class="muted">{{ trips }} trip{{ trips|pluralize }}</small></a>
+  <a class="card tile-link" href="{% url 'tags' %}"><span>#</span> Tags</a>
+</div>
+
+<p class="label">More</p>
+<ul class="list menu">
+  <li><a class="row" href="{% url 'cashflow' %}"><span class="tile">≈</span><span class="row-text"><strong>Cashflow</strong><small>Look 30 days ahead</small></span><span>›</span></a></li>
+  <li><a class="row" href="{% url 'cards' %}"><span class="tile">C</span><span class="row-text"><strong>Cards &amp; installments</strong><small>{{ installments }} installment{{ installments|pluralize }}</small></span><span>›</span></a></li>
+  <li><a class="row" href="{% url 'reports' %}"><span class="tile">R</span><span class="row-text"><strong>Reports</strong><small>Week, month and year</small></span><span>›</span></a></li>
+  <li><a class="row" href="{% url 'shared' %}"><span class="tile">👥</span><span class="row-text"><strong>Shared finances</strong><small>Split with your household</small></span><span>›</span></a></li>
+  <li><a class="row" href="{% url 'settings' %}"><span class="tile">⚙</span><span class="row-text"><strong>Settings &amp; privacy</strong><small>Profile, export, delete account</small></span><span>›</span></a></li>
+</ul>
+{% endblock %}

@@ -11,6 +11,7 @@
 
 <form method="post" class="auth-form" novalidate>
   {% csrf_token %}
+  {% with field=form.provider %}{% include 'expenses/_field.html' %}{% endwith %}
   {% with field=form.name %}{% include 'expenses/_field.html' %}{% endwith %}
   {% with field=form.kind %}{% include 'expenses/_field.html' %}{% endwith %}
   {% with field=form.opening_balance %}{% include 'expenses/_field.html' %}{% endwith %}

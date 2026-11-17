@@ -3,7 +3,7 @@
 {% block title %}Settings · Extrackash{% endblock %}
 
 {% block content %}
-{% url 'explore' as back %}{% include 'expenses/_head.html' with title='Settings' %}
+{% url 'plan' as back %}{% include 'expenses/_head.html' with title='Settings' %}
 
 <h2 class="headline small">{{ user.first_name }}</h2>
 <p class="muted">{{ user.email }}</p>
