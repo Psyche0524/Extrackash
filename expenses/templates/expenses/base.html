@@ -1,0 +1,27 @@
+{% load static %}<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>{% block title %}Extrackash{% endblock %}</title>
+  <link rel="icon" href="{% static 'expenses/logo.png' %}">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="{% static 'expenses/style.css' %}">
+</head>
+<body>
+  <main class="screen">
+    {% block content %}{% endblock %}
+  </main>
+  <nav class="tabbar" aria-label="Main">
+    <a href="{% url 'home' %}" {% if tab == 'home' %}aria-current="page"{% endif %}>
+      <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 10.5 12 4l8 6.5V20H4z"/></svg>Home
+    </a>
+    <a href="{% url 'activity' %}" {% if tab == 'activity' %}aria-current="page"{% endif %}>
+      <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M8 20V4M4 8l4-4 4 4M16 4v16M12 16l4 4 4-4"/></svg>Activity
+    </a>
+  </nav>
+  <script src="{% static 'expenses/app.js' %}"></script>
+</body>
+</html>

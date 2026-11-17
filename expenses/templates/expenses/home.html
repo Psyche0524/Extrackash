@@ -1,0 +1,36 @@
+{% extends 'expenses/base.html' %}
+{% load static %}
+
+{% block content %}
+<header class="page-head">
+  <h1>Hello!</h1>
+  <a class="icon-btn" href="{% url 'add' %}" aria-label="Add transaction">+</a>
+</header>
+
+<section class="hero">
+  <p class="label">Total available</p>
+  <p class="big">₱{{ available|floatformat:"2g" }}</p>
+  <div class="split">
+    <div><p class="label">Income</p><p class="mid">₱{{ income|floatformat:"2g" }}</p></div>
+    <div><p class="label">Expenses</p><p class="mid">₱{{ expenses|floatformat:"2g" }}</p></div>
+  </div>
+</section>
+
+<div class="actions">
+  <a class="btn" href="{% url 'add' %}">+ Add</a>
+  <a class="btn soft" href="{% url 'add' %}?kind=income">+ Income</a>
+</div>
+
+<section class="tip">
+  <img src="{% static 'expenses/logo.png' %}" alt="" width="40" height="40">
+  <p>Track your expenses. Grow your savings.</p>
+</section>
+
+<div class="section-head">
+  <h2>Recent activity</h2>
+  <a href="{% url 'activity' %}">View all →</a>
+</div>
+<ul class="list">
+  {% for t in recent %}{% include 'expenses/_row.html' %}{% empty %}<li class="empty">No transactions yet.</li>{% endfor %}
+</ul>
+{% endblock %}

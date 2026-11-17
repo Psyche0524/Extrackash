@@ -1,0 +1,26 @@
+{% extends 'expenses/base.html' %}
+
+{% block title %}Activity · Extrackash{% endblock %}
+
+{% block content %}
+<header class="page-head">
+  <h1>Activity</h1>
+  <a class="icon-btn" href="{% url 'add' %}" aria-label="Add transaction">+</a>
+</header>
+
+<form method="get" class="search">
+  <label class="label" for="q">Find a transaction</label>
+  <input id="q" name="q" type="search" value="{{ q }}" placeholder="Search by merchant, note or amount">
+</form>
+
+<div class="spent">
+  <p class="big dark">₱{{ spent|floatformat:"2g" }}</p>
+  <p class="muted">Total spent{% if q %} (filtered){% endif %}</p>
+</div>
+
+<ul class="list">
+  {% for t in transactions %}{% include 'expenses/_row.html' %}{% empty %}<li class="empty">No transactions found.</li>{% endfor %}
+</ul>
+
+<a class="btn block" href="{% url 'add' %}">+ Add transaction</a>
+{% endblock %}

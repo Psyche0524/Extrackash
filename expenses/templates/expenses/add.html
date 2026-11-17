@@ -1,0 +1,44 @@
+{% extends 'expenses/base.html' %}
+
+{% block title %}Add transaction · Extrackash{% endblock %}
+
+{% block content %}
+<header class="page-head">
+  <a class="back" href="{% url 'activity' %}" aria-label="Back">‹</a>
+  <h1>Add transaction</h1>
+  <span></span>
+</header>
+
+<form method="post" class="tx-form" novalidate>
+  {% csrf_token %}
+  {{ form.non_field_errors }}
+
+  <fieldset class="segmented">
+    <legend class="visually-hidden">Type</legend>
+    {% for radio in form.kind %}{{ radio.tag }}<label for="{{ radio.id_for_label }}">{{ radio.choice_label }}</label>{% endfor %}
+  </fieldset>
+
+  <label class="label" for="{{ form.amount.id_for_label }}">Amount</label>
+  <div class="amount-input"><span>₱</span>{{ form.amount }}</div>
+  {{ form.amount.errors }}
+
+  <label class="label" for="{{ form.description.id_for_label }}">Merchant or description</label>
+  {{ form.description }}{{ form.description.errors }}
+
+  <div class="two">
+    <div>
+      <label class="label" for="{{ form.category.id_for_label }}">Category</label>
+      {{ form.category }}
+    </div>
+    <div>
+      <label class="label" for="{{ form.date.id_for_label }}">Date</label>
+      {{ form.date }}{{ form.date.errors }}
+    </div>
+  </div>
+
+  <label class="label" for="{{ form.note.id_for_label }}">Note</label>
+  {{ form.note }}
+
+  <button type="submit" class="btn block">Save →</button>
+</form>
+{% endblock %}
