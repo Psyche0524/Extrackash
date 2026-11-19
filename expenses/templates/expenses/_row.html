@@ -1,8 +1,10 @@
-<li class="row">
-  <span class="tile" aria-hidden="true">{{ t.get_category_display|first }}</span>
-  <span class="row-text">
-    <strong>{{ t.description }}</strong>
-    <small>{{ t.get_category_display }} · {{ t.date|date:"M j" }}</small>
-  </span>
-  <span class="amount {{ t.kind }}">{% if t.kind == 'income' %}+{% else %}−{% endif %}₱{{ t.amount|floatformat:"2g" }}</span>
+{% load money %}<li>
+  <a class="row" href="{% url 'transaction' t.pk %}">
+    <span class="tile" aria-hidden="true">{% if t.kind == 'transfer' %}⇄{% else %}{{ t.get_category_display|first }}{% endif %}</span>
+    <span class="row-text">
+      <strong>{{ t.description }}</strong>
+      <small>{% if t.kind == 'transfer' %}Transfer{% else %}{{ t.get_category_display }}{% endif %}{% if t.account and t.kind != 'transfer' %} · {{ t.account }}{% endif %} · {{ t.date|date:"M j" }}</small>
+    </span>
+    <span class="amount {{ t.kind }}">{% if t.kind == 'income' %}+{% elif t.kind == 'expense' %}−{% endif %}{{ t.amount|peso }}</span>
+  </a>
 </li>

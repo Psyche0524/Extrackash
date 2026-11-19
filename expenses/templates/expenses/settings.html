@@ -1,0 +1,27 @@
+{% extends 'expenses/base.html' %}
+
+{% block title %}Settings · Extrackash{% endblock %}
+
+{% block content %}
+{% url 'explore' as back %}{% include 'expenses/_head.html' with title='Settings' %}
+
+<h2 class="headline small">{{ user.first_name }}</h2>
+<p class="muted">{{ user.email }}</p>
+
+<p class="label">Personal preferences</p>
+<ul class="list">
+  <li><a class="row" href="{% url 'profile_edit' %}"><span class="tile">✎</span><span class="row-text"><strong>Edit profile</strong><small>Name and email</small></span><span>→</span></a></li>
+  <li class="row"><span class="tile">₱</span><span class="row-text"><strong>Currency</strong><small>Philippine peso</small></span><strong>PHP ₱</strong></li>
+</ul>
+
+<p class="label">Data &amp; privacy</p>
+<ul class="list">
+  <li><a class="row" href="{% url 'export' %}"><span class="tile">↓</span><span class="row-text"><strong>Export &amp; backup</strong><small>Download all transactions as CSV</small></span><span>→</span></a></li>
+  <li><a class="row" href="{% url 'delete_account' %}"><span class="tile">✕</span><span class="row-text"><strong>Delete my account</strong><small>Remove your account and all your data</small></span><span>→</span></a></li>
+</ul>
+
+<form method="post" action="{% url 'logout' %}">
+  {% csrf_token %}<button class="btn soft block left">Log out</button>
+</form>
+<p class="fine">Extrackash 1.0 · You control what is shared. You can export or delete your data.</p>
+{% endblock %}

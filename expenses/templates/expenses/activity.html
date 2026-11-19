@@ -1,12 +1,10 @@
 {% extends 'expenses/base.html' %}
+{% load money %}
 
 {% block title %}Activity · Extrackash{% endblock %}
 
 {% block content %}
-<header class="page-head">
-  <h1>Activity</h1>
-  <a class="icon-btn" href="{% url 'add' %}" aria-label="Add transaction">+</a>
-</header>
+{% url 'add' as plus %}{% include 'expenses/_head.html' with title='Activity' %}
 
 <form method="get" class="search">
   <label class="label" for="q">Find a transaction</label>
@@ -14,12 +12,16 @@
 </form>
 
 <div class="spent">
-  <p class="big dark">₱{{ spent|floatformat:"2g" }}</p>
-  <p class="muted">Total spent{% if q %} (filtered){% endif %}</p>
+  <p class="big dark">{{ spent|peso }}</p>
+  <p class="muted">Total spent this month{% if q %} (filtered){% endif %}</p>
 </div>
 
 <ul class="list">
-  {% for t in transactions %}{% include 'expenses/_row.html' %}{% empty %}<li class="empty">No transactions found.</li>{% endfor %}
+  {% regroup transactions by date as days %}
+  {% for day in days %}
+    <li class="day">{{ day.grouper|date:"D · M j" }}</li>
+    {% for t in day.list %}{% include 'expenses/_row.html' %}{% endfor %}
+  {% empty %}<li class="empty">No transactions found.</li>{% endfor %}
 </ul>
 
 <a class="btn block" href="{% url 'add' %}">+ Add transaction</a>

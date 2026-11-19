@@ -1,0 +1,32 @@
+{% extends 'expenses/base.html' %}
+{% load money %}
+
+{% block title %}Accounts · Extrackash{% endblock %}
+
+{% block content %}
+{% url 'explore' as back %}{% url 'account_new' as plus %}{% include 'expenses/_head.html' with title='Accounts' %}
+
+<p class="label">Total available</p>
+<p class="big dark">{{ total|peso }}</p>
+<p class="muted">{{ accounts|length }} account{{ accounts|length|pluralize }}. One clear picture.</p>
+
+<ul class="list">
+  {% for a in accounts %}
+  <li>
+    <a class="row" href="{% url 'account_edit' a.pk %}">
+      <span class="tile" aria-hidden="true">{{ a.get_kind_display|first }}</span>
+      <span class="row-text"><strong>{{ a.name }}</strong><small>{{ a.get_kind_display }}</small></span>
+      <span class="amount">{{ a.balance|peso }}</span>
+    </a>
+  </li>
+  {% empty %}<li class="empty">No accounts yet.</li>{% endfor %}
+</ul>
+
+<section class="note-card">
+  <h2>Track, don't hand over control.</h2>
+  <p>Record balances manually. Extrackash never moves your real money.</p>
+</section>
+
+<a class="btn block" href="{% url 'transfer' %}">Record a transfer</a>
+<a class="btn soft block left" href="{% url 'account_new' %}">+ Add account</a>
+{% endblock %}
