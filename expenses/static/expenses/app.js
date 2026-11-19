@@ -39,6 +39,26 @@ if (swap) {
   show();
 }
 
+// Theme: System / Light / Dark picker in Settings. base.html applies it on load; this keeps it live.
+const root = document.documentElement;
+const systemDark = matchMedia('(prefers-color-scheme: dark)');
+const savedTheme = () => { try { return localStorage.getItem('theme') || 'system'; } catch { return 'system'; } };
+const applyTheme = () => {
+  const pick = savedTheme();
+  const dark = pick === 'dark' || (pick === 'system' && systemDark.matches);
+  root.dataset.theme = dark ? 'dark' : 'light';
+  document.querySelector('meta[name=theme-color]').content = dark ? '#0c1411' : '#f3f7f4';
+};
+systemDark.addEventListener('change', applyTheme);  // follow the phone when it switches at sunset
+const picker = document.querySelector('[data-theme-picker]');
+if (picker) {
+  picker.querySelector(`input[value="${savedTheme()}"]`).checked = true;
+  picker.addEventListener('change', (e) => {
+    try { localStorage.setItem('theme', e.target.value); } catch { /* private mode: applies for this page only */ }
+    applyTheme();
+  });
+}
+
 // Close the + menu when tapping outside it.
 document.addEventListener('click', (e) => {
   const fab = document.querySelector('.fab[open]');
