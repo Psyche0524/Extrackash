@@ -75,7 +75,6 @@ urlpatterns = [
     path('explore/shared/new/', v.household_new, name='household_new'),
     path('explore/shared/invite/', v.household_invite, name='household_invite'),
     path('explore/shared/leave/', v.household_leave, name='household_leave'),
-    path('explore/chat/', v.chat, name='chat'),
     path('settings/', v.settings_page, name='settings'),
     path('settings/profile/', v.profile_edit, name='profile_edit'),
     path('settings/delete/', v.delete_account, name='delete_account'),

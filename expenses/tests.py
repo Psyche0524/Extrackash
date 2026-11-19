@@ -25,7 +25,7 @@ class AuthTests(TestCase):
         self.assertRedirects(response, '/setup/')
         response = self.client.post('/setup/', {'provider': 'bpi', 'name': 'BPI Everyday', 'kind': 'bank', 'opening_balance': '54250'})
         self.assertRedirects(response, '/ready/')
-        self.assertContains(self.client.get('/'), 'Alex!')
+        self.assertContains(self.client.get('/'), '<br>Alex')
         self.assertContains(self.client.get('/explore/accounts/'), '₱54,250.00')
         self.assertEqual(User.objects.get().username, 'alex@example.com')
 
@@ -177,11 +177,6 @@ class MoneyTests(TestCase):
         self.assertIn('Mine', body)
         self.assertNotIn('Not mine', body)
 
-    def test_chat_save_question(self):
-        Budget.objects.create(user=self.user, category='dining', limit=10000)
-        answer = self.client.get('/explore/chat/?q=Can I save 5,000 this month?').context['answer']
-        self.assertIn('₱5,000.00', answer['body'])
-
     # ---- features from the screen recording ----
 
     def test_transfer_from_outside_and_to_outside_with_fee(self):
@@ -287,14 +282,6 @@ class MoneyTests(TestCase):
             self.client.force_login(make_user('maya@example.com'))
             self.assertEqual(self.client.get(f'/activity/{tx.pk}/photo/').status_code, 404)
 
-    def test_streak_counts_days_in_a_row(self):
-        from datetime import timedelta
-        from django.utils import timezone
-        today = timezone.localdate()
-        for days_ago in (0, 1, 2, 4):
-            self.add(date=(today - timedelta(days=days_ago)).isoformat())
-        self.assertEqual(self.client.get('/').context['streak'], 3)
-
     def test_every_page_loads(self):
         goal = Goal.objects.create(user=self.user, name='G', target=100)
         budget = Budget.objects.create(user=self.user, category='dining', limit=100)
@@ -305,12 +292,12 @@ class MoneyTests(TestCase):
         names = ['home', 'activity', 'add', 'transfer', 'plan', 'budgets', 'budget_new', 'goals', 'goal_new', 'cashflow',
                  'planned', 'planned_new', 'trips', 'trip_new', 'tags', 'receivables',
                  'accounts', 'account_new', 'cards', 'installments', 'loans', 'debt_new', 'investments',
-                 'investment_new', 'reports', 'shared', 'household_new', 'chat', 'settings', 'profile_edit', 'delete_account']
+                 'investment_new', 'reports', 'shared', 'household_new', 'settings', 'profile_edit', 'delete_account']
         urls = [reverse(n) for n in names] + [
             reverse('transaction', args=[tx.pk]), reverse('transaction_edit', args=[tx.pk]),
             reverse('budget', args=[budget.pk]), reverse('goal', args=[goal.pk]), reverse('goal_add', args=[goal.pk]),
             reverse('debt_edit', args=[debt.pk]), reverse('investment_edit', args=[item.pk]),
-            '/explore/reports/?period=week', '/explore/reports/?period=year', '/explore/chat/?q=how am I doing',
+            '/explore/reports/?period=week', '/explore/reports/?period=year',
             '/?span=week', '/?span=month&forecast=5y', '/add/?scan=1', '/activity/?kind=income&tag=x&date=2026-11-17',
             '/explore/accounts/?show=liabilities&view=list',
         ]

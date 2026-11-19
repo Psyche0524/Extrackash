@@ -1,5 +1,5 @@
 {% extends 'expenses/base.html' %}
-{% load money %}
+{% load money icons %}
 
 {% block title %}{{ goal.name }} · Extrackash{% endblock %}
 
@@ -18,7 +18,7 @@
 <ul class="list">
   {% for c in goal.contributions.all %}
   <li class="row">
-    <span class="tile" aria-hidden="true">⚑</span>
+    <span class="tile income">{% icon 'goal' %}</span>
     <span class="row-text"><strong>{{ c.description }}</strong><small>{{ c.date|date:"M j" }}</small></span>
     <span class="amount income">+{{ c.amount|peso }}</span>
   </li>

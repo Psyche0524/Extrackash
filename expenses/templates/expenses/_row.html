@@ -1,10 +1,10 @@
-{% load money %}<li>
+{% load money icons %}<li>
   {% if show_time %}<small class="time">{{ t.time|time:"g:i A" }}</small>{% endif %}
   <a class="row" href="{% url 'transaction' t.pk %}">
-    <span class="tile" aria-hidden="true">{% if t.kind == 'transfer' %}⇄{% else %}{{ t.get_category_display|first|upper }}{% endif %}</span>
+    <span class="tile {{ t.kind }}">{% if t.kind == 'transfer' %}{% icon 'swap' %}{% else %}{% icon t.category|icon_for %}{% endif %}</span>
     <span class="row-text">
       <strong>{{ t.description }}</strong>
-      <small>{% if t.kind == 'transfer' %}Transfer{% else %}{{ t.get_category_display }}{% endif %}{% if not show_time %} · {{ t.date|date:"M j" }}{% endif %}{% if t.photo %} · 📷{% endif %}</small>
+      <small>{% if t.kind == 'transfer' %}Transfer{% else %}{{ t.get_category_display }}{% endif %}{% if not show_time %} · {{ t.date|date:"M j" }}{% endif %}{% if t.photo %} · {% icon 'camera' 'Has photo' %}{% endif %}</small>
     </span>
     <span class="row-end">
       <span class="amount {{ t.kind }}">{% if t.kind == 'income' %}+{% elif t.kind == 'expense' %}−{% endif %}{{ t.amount|peso }}</span>

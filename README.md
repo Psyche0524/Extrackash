@@ -18,7 +18,8 @@ expenses/                   The expenses app
   tests.py                  Tests
 ```
 
-Brand: **Poppins** font and the green palette from the Brand Identity Board
+Brand: **Plus Jakarta Sans** font, the green palette from the Brand Identity Board, one line-icon set
+(`templates/expenses/_icons.html`, used as `{% icon 'name' %}`)
 (see the `:root` colors in `expenses/static/expenses/style.css`).
 Figma exports live in a local `Figma Design/` folder, which git ignores.
 
@@ -35,7 +36,6 @@ Figma exports live in a local `Figma Design/` folder, which git ignores.
 | 07 Transaction detail | `/activity/<id>/` |
 | 08 Budgets / 09 Budget detail | `/plan/`, `/plan/budgets/<id>/` |
 | 10 Accounts / 11 Transfer | `/explore/accounts/`, `/transfer/` |
-| 12 Extrackash Chat | `/explore/chat/` |
 | 13 Goals / 14 Goal detail | `/plan/goals/`, `/plan/goals/<id>/` |
 | 15 Cards / 16 Installments | `/explore/cards/`, `/explore/installments/` |
 | 17 Cashflow / 18 Debt plan | `/plan/cashflow/`, `/explore/loans/` |
@@ -46,7 +46,7 @@ Figma exports live in a local `Figma Design/` folder, which git ignores.
 | 23 Settings | `/settings/` |
 
 Not built (needs a native app or an outside service): app lock / biometrics, cloud sync and offline mode,
-appearance themes, PDF export, AI chat (Chat answers from your own numbers with simple rules for now).
+appearance themes, PDF export. Chat and the logging streak were removed on purpose.
 
 ## First-time setup (Windows)
 

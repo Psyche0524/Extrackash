@@ -1,4 +1,5 @@
 {% extends 'expenses/base.html' %}
+{% load icons %}
 
 {% block title %}{% if form.instance.pk %}Edit{% else %}Add{% endif %} transaction · Extrackash{% endblock %}
 
@@ -6,12 +7,12 @@
 <form method="post" enctype="multipart/form-data" class="tx-form" novalidate>
   {% csrf_token %}
   <header class="page-head">
-    <a class="back" href="javascript:history.back()" aria-label="Close">✕</a>
+    <a class="icon-btn" href="javascript:history.back()" aria-label="Close">{% icon 'close' %}</a>
     <fieldset class="segmented kind-switch">
       <legend class="visually-hidden">Type</legend>
       {% for radio in form.kind %}{{ radio.tag }}<label for="{{ radio.id_for_label }}">{{ radio.choice_label }}</label>{% endfor %}
     </fieldset>
-    <a class="icon-btn small" href="{% url 'transfer' %}" aria-label="Transfer">⇄</a>
+    <a class="icon-btn" href="{% url 'transfer' %}" aria-label="Transfer">{% icon 'swap' %}</a>
   </header>
   {{ form.non_field_errors }}
 
@@ -61,7 +62,7 @@
   {% if form.owed_by %}
   <details class="owed" {% if form.owed_by.value or form.owed_amount.errors %}open{% endif %}>
     <summary>Someone owes me part of this</summary>
-    <p class="hint">Track who owes you. It shows up in Plan → Money owed to you.</p>
+    <p class="hint">Track who owes you. It shows up in Plan › Money owed to you.</p>
     <div class="two">
       <div>{% with field=form.owed_by %}{% include 'expenses/_field.html' %}{% endwith %}</div>
       <div>{% with field=form.owed_amount %}{% include 'expenses/_field.html' %}{% endwith %}</div>
@@ -69,6 +70,6 @@
   </details>
   {% endif %}
 
-  <button type="submit" class="btn block arrow">Save <span aria-hidden="true">→</span></button>
+  <button type="submit" class="btn block arrow">Save</button>
 </form>
 {% endblock %}

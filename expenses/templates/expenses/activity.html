@@ -1,16 +1,16 @@
 {% extends 'expenses/base.html' %}
-{% load money %}
+{% load money icons %}
 
 {% block title %}History · Extrackash{% endblock %}
 
 {% block content %}
 <header class="page-head">
   <h1>History</h1>
-  <a class="icon-btn" href="{% url 'add' %}" aria-label="Add transaction">+</a>
+  <a class="icon-btn" href="{% url 'add' %}" aria-label="Add transaction">{% icon 'plus' %}</a>
 </header>
 
 <details class="filters" {% if filtered %}open{% endif %}>
-  <summary class="chips"><span>🔍 Search &amp; filter</span>{% if filtered %}<a href="{% url 'activity' %}">Clear</a>{% endif %}</summary>
+  <summary class="chips"><span>{% icon 'search' %}Search &amp; filter</span>{% if filtered %}<a href="{% url 'activity' %}">Clear</a>{% endif %}</summary>
   <form method="get" class="auth-form">
     <label class="label" for="q">Search</label>
     <input id="q" name="q" type="search" value="{{ f.q }}" placeholder="Name, note, category or amount">

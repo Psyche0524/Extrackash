@@ -21,7 +21,7 @@
   <div class="actions">
     {% if d.remaining %}
     <form method="post" action="{% url 'debt_pay' d.pk %}">{% csrf_token %}<button class="btn block">{% if kind == 'receivable' %}Record settlement{% else %}Record payment{% endif %}</button></form>
-    {% else %}<p class="green">{% if kind == 'receivable' %}Settled 🎉{% else %}Paid off 🎉{% endif %}</p>{% endif %}
+    {% else %}<p class="green">{% if kind == 'receivable' %}Settled{% else %}Paid off{% endif %}</p>{% endif %}
     <a class="btn soft" href="{% url 'debt_edit' d.pk %}">Adjust</a>
   </div>
 </section>

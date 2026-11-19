@@ -1,12 +1,12 @@
 {% extends 'expenses/base.html' %}
-{% load money %}
+{% load money icons %}
 
 {% block title %}Wallet · Extrackash{% endblock %}
 
 {% block content %}
 <header class="page-head">
-  <span><h1>Accounts</h1><small class="muted">Manage your wallets and balances</small></span>
-  <a class="btn small" href="{% url 'account_new' %}?kind=wallet">+ Add account</a>
+  <span><h1>Wallet</h1><small class="muted">Your accounts and balances</small></span>
+  <a class="btn small" href="{% url 'account_new' %}?kind=wallet">{% icon 'plus' %}Add account</a>
 </header>
 
 <section class="hero">
@@ -22,9 +22,9 @@
 
 <div class="two-cards">
   <section class="card">
-    <p class="label green">Insight</p>
+    <p class="label">Insight</p>
     <p class="small">{{ insight }}</p>
-    <a class="green small" href="{% url 'cashflow' %}">Forecast cashflow ›</a>
+    <a class="link small" href="{% url 'cashflow' %}">Forecast cashflow</a>
   </section>
   <section class="card">
     <p class="label">Daily balance</p>
@@ -39,8 +39,8 @@
     {% if group_names %}<a href="?show={{ show }}&view={{ view }}&group=Ungrouped" {% if group == 'Ungrouped' %}aria-current="page"{% endif %}>Ungrouped</a>{% endif %}
   </nav>
   <nav class="segmented links view-toggle" aria-label="View">
-    <a href="?show={{ show }}&group={{ group|urlencode }}&view=grid" {% if view != 'list' %}aria-current="page"{% endif %} aria-label="Grid">▦</a>
-    <a href="?show={{ show }}&group={{ group|urlencode }}&view=list" {% if view == 'list' %}aria-current="page"{% endif %} aria-label="List">☰</a>
+    <a href="?show={{ show }}&group={{ group|urlencode }}&view=grid" {% if view != 'list' %}aria-current="page"{% endif %} aria-label="Grid">{% icon 'grid' %}</a>
+    <a href="?show={{ show }}&group={{ group|urlencode }}&view=list" {% if view == 'list' %}aria-current="page"{% endif %} aria-label="List">{% icon 'list' %}</a>
   </nav>
 </div>
 
@@ -48,7 +48,7 @@
 <details class="group" open>
   <summary class="between"><strong>{{ g.name }}</strong><span>{{ g.total|peso }}</span></summary>
   {% if view == 'list' %}
-  <ul class="list">
+  <ul class="list surface">
     {% for a in g.items %}
     <li><a class="row" href="{% url 'account_edit' a.pk %}">
       <span class="wallet-logo" style="--card: {{ a.color }}" aria-hidden="true">{{ a.get_provider_display|first }}</span>
@@ -79,12 +79,12 @@
 
 <div class="wallets">
   <a class="wallet add" href="{% url 'account_new' %}?kind=wallet">
-    <span class="wallet-logo" aria-hidden="true">+</span>
+    <span class="wallet-logo">{% icon 'plus' %}</span>
     <strong>Add wallet</strong>
     <small>GCash, Maya, banks, cash…</small>
   </a>
   <a class="wallet add" href="{% url 'transfer' %}">
-    <span class="wallet-logo" aria-hidden="true">⇄</span>
+    <span class="wallet-logo">{% icon 'swap' %}</span>
     <strong>Transfer</strong>
     <small>Between accounts or outside</small>
   </a>
@@ -92,9 +92,9 @@
 
 <div class="section-head">
   <h2>Recent income</h2>
-  <a href="{% url 'activity' %}?kind=income">View all →</a>
+  <a class="link small" href="{% url 'activity' %}?kind=income">View all</a>
 </div>
-<ul class="list">
+<ul class="list surface">
   {% for t in recent_income %}{% include 'expenses/_row.html' %}{% empty %}<li class="empty">No income logged yet.</li>{% endfor %}
 </ul>
 {% endblock %}
