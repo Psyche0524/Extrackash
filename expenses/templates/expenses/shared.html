@@ -4,7 +4,7 @@
 {% block title %}Shared finances · Extrackash{% endblock %}
 
 {% block content %}
-{% url 'explore' as back %}{% include 'expenses/_head.html' with title='Shared finances' %}
+{% url 'plan' as back %}{% include 'expenses/_head.html' with title='Shared finances' %}
 
 {% if not home %}
 <section class="hero">
@@ -30,7 +30,7 @@
 <ul class="list">
   {% for p in people %}
   <li class="row">
-    <span class="tile" aria-hidden="true">{{ p.user.first_name|first }}</span>
+    <span class="tile avatar" aria-hidden="true">{{ p.user.first_name|first|upper }}</span>
     <span class="row-text"><strong>{{ p.user.first_name }} paid</strong>
       <small>{% if p.balance > 0 %}Is owed {{ p.balance|peso }}{% elif p.balance < 0 %}Owes {{ p.balance|peso|slice:"1:" }}{% else %}All square{% endif %}</small></span>
     <span class="amount">{{ p.paid|peso }}</span>

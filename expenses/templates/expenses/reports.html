@@ -4,7 +4,7 @@
 {% block title %}Reports · Extrackash{% endblock %}
 
 {% block content %}
-{% url 'explore' as back %}{% include 'expenses/_head.html' with title='Reports' %}
+{% url 'plan' as back %}{% include 'expenses/_head.html' with title='Reports' %}
 
 <nav class="segmented three links" aria-label="Period">
   <a href="?period=week" {% if period == 'week' %}aria-current="page"{% endif %}>Week</a>

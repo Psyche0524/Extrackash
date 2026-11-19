@@ -1,10 +1,10 @@
 {% extends 'expenses/base.html' %}
-{% load money %}
+{% load money icons %}
 
 {% block title %}Investments · Extrackash{% endblock %}
 
 {% block content %}
-{% url 'explore' as back %}{% url 'investment_new' as plus %}{% include 'expenses/_head.html' with title='Investments' %}
+{% url 'plan' as back %}{% url 'investment_new' as plus %}{% include 'expenses/_head.html' with title='Investments' %}
 
 <p class="label">Portfolio value</p>
 <p class="big dark">{{ value|peso }}</p>
@@ -15,7 +15,7 @@
   {% for i in items %}
   <li>
     <a class="row" href="{% url 'investment_edit' i.pk %}">
-      <span class="tile" aria-hidden="true">↗</span>
+      <span class="tile income">{% icon 'invest' %}</span>
       <span class="row-text"><strong>{{ i.name }}</strong><small>{{ i.share }}%{% if i.label %} · {{ i.label }}{% endif %}</small></span>
       <span class="amount">{{ i.value|peso }}</span>
     </a>

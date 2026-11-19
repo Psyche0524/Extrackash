@@ -6,7 +6,7 @@
 
 {% block content %}
 <p class="wordmark">Extrac<span>kash</span></p>
-<img class="mascot" src="{% static 'expenses/mascot.png' %}" alt="Extrackash squirrel holding cash" width="120" height="120">
+<img class="mascot-half hero-mascot" src="{% static 'expenses/mascot-half.png' %}" alt="Extrackash squirrel holding cash" width="510" height="400">
 
 <h1 class="headline">A little clarity.<br>A lot more possibility.</h1>
 <p class="lede">Meet your money, without the stress. Track today. Make space for tomorrow.</p>
@@ -16,7 +16,7 @@
   <p>Your finances stay yours. Start privately, no bank login needed.</p>
 </div>
 
-<a class="btn block arrow" href="{% url 'signup' %}">Get started <span aria-hidden="true">→</span></a>
+<a class="btn block arrow" href="{% url 'signup' %}">Get started</a>
 <a class="btn soft block left" href="{% url 'login' %}">I already have an account</a>
 
 <p class="fine">By continuing, you agree to our Terms &amp; Privacy Policy.</p>

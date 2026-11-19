@@ -1,12 +1,13 @@
 {% extends 'expenses/base.html' %}
+{% load icons %}
 
 {% block title %}{{ title }} · Extrackash{% endblock %}
 
 {% block content %}
 <header class="page-head">
-  <a class="back" href="javascript:history.back()" aria-label="Back">‹</a>
+  <a class="icon-btn" href="javascript:history.back()" aria-label="Back">{% icon 'back' %}</a>
   <h1>{{ title }}</h1>
-  <span></span>
+  <span class="icon-spacer"></span>
 </header>
 {% if subtitle %}<p class="lede small">{{ subtitle }}</p>{% endif %}
 
@@ -21,6 +22,6 @@
       {% if field.help_text %}<p class="hint">{{ field.help_text }}</p>{% endif %}
     {% endif %}
   {% endfor %}
-  <button type="submit" class="btn block arrow">Save <span aria-hidden="true">→</span></button>
+  <button type="submit" class="btn block arrow">Save</button>
 </form>
 {% endblock %}

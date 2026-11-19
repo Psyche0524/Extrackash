@@ -1,10 +1,10 @@
 {% extends 'expenses/base.html' %}
-{% load money %}
+{% load money icons %}
 
 {% block title %}Cards · Extrackash{% endblock %}
 
 {% block content %}
-{% url 'explore' as back %}{% include 'expenses/_head.html' with title='Cards' %}
+{% url 'plan' as back %}{% include 'expenses/_head.html' with title='Cards' %}
 
 {% for c in cards %}
 <section class="credit-card">
@@ -29,9 +29,9 @@
 {% endfor %}
 
 <a class="row" href="{% url 'installments' %}">
-  <span class="tile" aria-hidden="true">I</span>
+  <span class="tile">{% icon 'planned' %}</span>
   <span class="row-text"><strong>Installments</strong><small>{{ installments }} plan{{ installments|pluralize }}</small></span>
-  <span aria-hidden="true">→</span>
+ 
 </a>
 <p class="fine">For tracking only. Pay through your bank, then record it here.</p>
 {% endblock %}

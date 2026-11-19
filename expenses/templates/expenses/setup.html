@@ -11,10 +11,11 @@
 
 <form method="post" class="auth-form" novalidate>
   {% csrf_token %}
+  {% with field=form.provider %}{% include 'expenses/_field.html' %}{% endwith %}
   {% with field=form.name %}{% include 'expenses/_field.html' %}{% endwith %}
   {% with field=form.kind %}{% include 'expenses/_field.html' %}{% endwith %}
   {% with field=form.opening_balance %}{% include 'expenses/_field.html' %}{% endwith %}
   <p class="hint">Add cash, wallets and investments later. Manual entry keeps you in control.</p>
-  <button type="submit" class="btn block arrow">Create my space <span aria-hidden="true">→</span></button>
+  <button type="submit" class="btn block arrow">Create my space</button>
 </form>
 {% endblock %}
