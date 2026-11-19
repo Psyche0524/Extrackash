@@ -218,3 +218,9 @@ __marimo__/
 
 # Streamlit
 .streamlit/secrets.toml
+
+# Design exports (kept local, not in the repo)
+Figma Design/
+
+# Uploaded receipt photos
+media/
