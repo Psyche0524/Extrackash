@@ -1,0 +1,28 @@
+{% extends 'expenses/base.html' %}
+{% load money %}
+
+{% block title %}Activity · Extrackash{% endblock %}
+
+{% block content %}
+{% url 'add' as plus %}{% include 'expenses/_head.html' with title='Activity' %}
+
+<form method="get" class="search">
+  <label class="label" for="q">Find a transaction</label>
+  <input id="q" name="q" type="search" value="{{ q }}" placeholder="Search by merchant, note or amount">
+</form>
+
+<div class="spent">
+  <p class="big dark">{{ spent|peso }}</p>
+  <p class="muted">Total spent this month{% if q %} (filtered){% endif %}</p>
+</div>
+
+<ul class="list">
+  {% regroup transactions by date as days %}
+  {% for day in days %}
+    <li class="day">{{ day.grouper|date:"D · M j" }}</li>
+    {% for t in day.list %}{% include 'expenses/_row.html' %}{% endfor %}
+  {% empty %}<li class="empty">No transactions found.</li>{% endfor %}
+</ul>
+
+<a class="btn block" href="{% url 'add' %}">+ Add transaction</a>
+{% endblock %}

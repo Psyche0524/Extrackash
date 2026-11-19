@@ -1,0 +1,21 @@
+{% extends 'expenses/base.html' %}
+
+{% block title %}Explore · Extrackash{% endblock %}
+
+{% block content %}
+<h1>Your financial space</h1>
+<h2 class="headline">A place for every part of your money.</h2>
+
+<ul class="list menu">
+  <li><a class="row" href="{% url 'accounts' %}"><span class="tile">A</span><span class="row-text"><strong>Accounts</strong><small>Cash, banks &amp; wallets</small></span><span>→</span></a></li>
+  <li><a class="row" href="{% url 'chat' %}"><span class="tile">?</span><span class="row-text"><strong>Extrackash Chat</strong><small>A clearer next step</small></span><span>→</span></a></li>
+  <li><a class="row" href="{% url 'goals' %}"><span class="tile">⚑</span><span class="row-text"><strong>Goals</strong><small>Save for what matters</small></span><span>→</span></a></li>
+  <li><a class="row" href="{% url 'cards' %}"><span class="tile">C</span><span class="row-text"><strong>Cards &amp; installments</strong><small>Know what's due</small></span><span>→</span></a></li>
+  <li><a class="row" href="{% url 'cashflow' %}"><span class="tile">↗</span><span class="row-text"><strong>Cashflow</strong><small>Look ahead with confidence</small></span><span>→</span></a></li>
+  <li><a class="row" href="{% url 'loans' %}"><span class="tile">D</span><span class="row-text"><strong>Debt plan</strong><small>A steady path forward</small></span><span>→</span></a></li>
+  <li><a class="row" href="{% url 'investments' %}"><span class="tile">↗</span><span class="row-text"><strong>Investments</strong><small>Keep the long view</small></span><span>→</span></a></li>
+  <li><a class="row" href="{% url 'reports' %}"><span class="tile">R</span><span class="row-text"><strong>Reports</strong><small>Understand your patterns</small></span><span>→</span></a></li>
+  <li><a class="row" href="{% url 'shared' %}"><span class="tile">S</span><span class="row-text"><strong>Shared finances</strong><small>Build a life together</small></span><span>→</span></a></li>
+  <li><a class="row" href="{% url 'settings' %}"><span class="tile">⚙</span><span class="row-text"><strong>Settings &amp; privacy</strong><small>Your space, your rules</small></span><span>→</span></a></li>
+</ul>
+{% endblock %}

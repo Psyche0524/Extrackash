@@ -1,0 +1,35 @@
+{% extends 'expenses/base.html' %}
+
+{% block title %}Add transaction · Extrackash{% endblock %}
+
+{% block content %}
+{% url 'activity' as back %}{% include 'expenses/_head.html' with title='Add transaction' %}
+
+<form method="post" class="tx-form" novalidate>
+  {% csrf_token %}
+  {{ form.non_field_errors }}
+
+  <fieldset class="segmented three">
+    <legend class="visually-hidden">Type</legend>
+    {% for radio in form.kind %}{{ radio.tag }}<label for="{{ radio.id_for_label }}">{{ radio.choice_label }}</label>{% endfor %}
+    <a href="{% url 'transfer' %}">Transfer</a>
+  </fieldset>
+
+  <label class="label" for="{{ form.amount.id_for_label }}">Amount</label>
+  <div class="amount-input"><span>₱</span>{{ form.amount }}</div>
+  {{ form.amount.errors }}
+
+  {% with field=form.description %}{% include 'expenses/_field.html' %}{% endwith %}
+
+  <div class="two">
+    <div>{% with field=form.category %}{% include 'expenses/_field.html' %}{% endwith %}</div>
+    <div>{% with field=form.account %}{% include 'expenses/_field.html' %}{% endwith %}</div>
+  </div>
+
+  {% with field=form.date %}{% include 'expenses/_field.html' %}{% endwith %}
+  {% with field=form.note %}{% include 'expenses/_field.html' %}{% endwith %}
+  {% if form.shared %}<label class="check">{{ form.shared }} {{ form.shared.label }}</label>{% endif %}
+
+  <button type="submit" class="btn block arrow">Save <span aria-hidden="true">→</span></button>
+</form>
+{% endblock %}
